@@ -41,7 +41,7 @@ grid-bottleneck summary                   # 打印瓶颈/伪前沿归类
 grid-bottleneck subtopics                 # 从 data/ 复算子方向指标
 grid-bottleneck verify                    # 报告数字逐格回溯 CSV（CI 用，失败退出码 1）
 grid-bottleneck show 构网型逆变器          # 查单条词条的全部指标
-pytest                                    # 15 条测试：口径、互斥、快照字节级可复现、上游 pin 一致性
+pytest                                    # 16 条测试：口径、互斥、快照字节级可复现、上游 pin 一致性
 ```
 
 不装包也能跑：
@@ -65,8 +65,9 @@ PYTHONPATH=src python -m pytest tests
 
 原始语料与词条级流水线在上游 [energy-topic-hotspots](https://github.com/Liangyl0428/energy-topic-hotspots)；
 本仓库是**分析快照 + 判定层 + 对账工具**，并**自 v2 起独立负责子方向聚合**（上游已不再产出 `subtopic_report.csv`）。
-`data/run_meta.json` 的 `upstream_pin` 记录了 `terms_report.csv` / `dict_snapshot.csv` 的 sha256，
-上游重新生成产物时可据此发现快照漂移（`pytest` 会失败告警）。
+`data/run_meta.json` 的 `upstream_pin` 记录了 6 个上游文件（`terms_report.csv`、`dict_snapshot.csv`、
+`papers_by_quarter.csv`、`corpus_totals.csv`、`patents_by_year.csv`、`policies_by_year.csv`）的
+sha256——即份额/斜率/专利/政策用到的全部输入。上游重新生成产物时可据此发现快照漂移（`pytest` 会失败告警）。
 这样做的理由：结论必须能被别人验证，而验证不需要几个 GB 的语料——需要的是
 "当时用的数字是什么、它们怎么算出来的"。
 
@@ -88,7 +89,7 @@ src/grid_bottleneck/
 config/
   subtopic_rules.json    子方向判定门槛
   subtopic_review.json   人工复核（非技术子方向排除、性质改判，必须写理由）
-tests/                   15 条测试
+tests/                   16 条测试
 ```
 
 ---

@@ -26,8 +26,11 @@ def _render(rows):
     return buf.getvalue().replace("\r\n", "\n")
 
 
-def test_snapshot_is_reproducible_byte_for_byte():
-    # 两者都用 utf-8-sig 读：BOM 不参与比较，其余必须逐字节一致
+def test_snapshot_is_reproducible():
+    """仓库自带的 data/subtopic_report.csv 必须能由工具从 data/ 复算出来。
+
+    本用例按文本比较（BOM 与行尾归一）；CI 里另有 `diff` 步骤做字节级比较。
+    """
     committed = (DATA / "subtopic_report.csv").read_text(encoding="utf-8-sig")
     assert _render(build_rows()).lstrip("\ufeff") == committed
 
@@ -40,6 +43,15 @@ def test_upstream_snapshot_pinned():
     for name, expected in pins.items():
         got = hashlib.sha256((DATA / name).read_bytes()).hexdigest()
         assert got == expected, f"{name} 与 run_meta.json 记录的 sha256 不一致，快照已漂移"
+
+
+def test_upstream_pin_covers_metric_inputs():
+    """份额/斜率/专利/政策用到的上游文件都必须有 hash 锚点，否则漂移可能漏检。"""
+    meta = json.loads((DATA / "run_meta.json").read_text(encoding="utf-8"))
+    pins = meta.get("upstream_pin") or {}
+    for name in ("terms_report.csv", "dict_snapshot.csv", "papers_by_quarter.csv",
+                 "corpus_totals.csv", "patents_by_year.csv", "policies_by_year.csv"):
+        assert name in pins, f"{name} 缺少 sha256 锚点"
 
 
 def test_three_bottlenecks_and_their_numbers():

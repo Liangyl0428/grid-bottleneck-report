@@ -1,0 +1,3 @@
+# 保留原始字节：CSV 快照与 sha256 锚点不做行尾转换，
+# 否则 Windows（core.autocrlf=true）检出后 test_upstream_snapshot_pinned 会误报漂移。
+* -text

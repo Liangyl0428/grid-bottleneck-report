@@ -1,0 +1,19 @@
+# 文档与派生数据的许可（CC BY 4.0）
+
+本仓库的**文档**（`README.md`、`NOTICE.md`、`docs/`）与**派生数据快照**（`data/*.csv`、`data/run_meta.json`）
+采用 [Creative Commons Attribution 4.0 International（CC BY 4.0）](https://creativecommons.org/licenses/by/4.0/)
+许可。
+
+你可以自由共享（以任何媒介或格式复制、发行）与演绎（修改、转换、基于本作品再创作），
+包括商业目的，但必须：
+
+- **署名**：注明来源为 `grid-bottleneck-report`（作者 Liangyl0428），并附本许可链接；
+- **标明修改**：若修改了数据或文档，需说明修改内容；
+- **不得增加额外限制**：不得对本许可允许的行为附加法律或技术限制。
+
+本许可**不覆盖**：
+
+- 源代码（`src/`、`tests/`、`config/`、`Makefile` 等）——按根目录 `LICENSE`（MIT）授权；
+- 上游原始语料（OpenAlex、专利公开数据、政策全文）——遵循各来源自身的许可与使用条款，见 `NOTICE.md`。
+
+许可全文：https://creativecommons.org/licenses/by/4.0/legalcode

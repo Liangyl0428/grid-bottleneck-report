@@ -1,6 +1,6 @@
 {
   "_note": "子方向级人工复核。只影响 docs/ 报告里的归类展示，不改写任何算法产物——与 config/manual_review.json 同一原则（判定/配额/复核三层解耦）。",
-  "_protocol": "1) 先看 outputs/terms/subtopic_report.csv 的 pass_* 列；2) 对 non_technology 的子方向不做技术瓶颈判定；3) 对看数据看不出的性质（例如'已在工程优化阶段'）在这里写 override 与理由，报告正文必须引用该理由，不许口头改判。",
+  "_protocol": "1) 先看 data/subtopic_report.csv 的 pass_* 列；2) 对 non_technology 的子方向不做技术瓶颈判定；3) 对看数据看不出的性质（例如'已在工程优化阶段'）在这里写 override 与理由，报告正文必须引用该理由，不许口头改判。",
   "exclude_from_screening": {
     "9.4 表征与测试方法": "表征/测试手段不是技术方向本身。METHOD §8.1 已说明词典含此子方向，其词条进候选是词典设计使然。",
     "3.1 能源转型战略与政策规划": "战略/规划文本类子方向，份额随政策发布节奏波动，不能当成'学术推不动'的证据。",
