@@ -42,3 +42,55 @@ def test_parenthetical_count_mismatch_is_detected(tmp_path):
                                "| 词条：车网互动 | 1.296 | 2.77×（999/34） |\n")
     _checked, bad, _skipped, _noobj = check(doc=doc)
     assert any(tok == "999" for _ln, _name, tok, _cell in bad), bad
+
+
+def test_annotated_term_names_resolve(tmp_path):
+    """`器件大盘：X`、`X（背景）` 这类带注记的首格不能整行跳过。"""
+    doc = _write_doc(tmp_path, "| 词条 | DF | 份额同比 | 专利同比 |\n|---|---:|---:|---:|\n"
+                               "| 器件大盘：直流-直流变换器 | 1.972% | 1.073 | 0.84 |\n"
+                               "| 锂离子电池（背景） | 3.047% | 0.924 | 0.82 |\n")
+    checked, bad, _skipped, _noobj = check(doc=doc)
+    assert not bad, bad
+    assert checked >= 6, checked
+
+
+def test_annotated_term_wrong_value_is_detected(tmp_path):
+    """注入 0.84（实际 0.82）必须被抓到。"""
+    doc = _write_doc(tmp_path, "| 词条 | 专利同比 |\n|---|---:|\n"
+                               "| 锂离子电池（背景） | 0.84 |\n")
+    _checked, bad, _skipped, _noobj = check(doc=doc)
+    assert any(tok == "0.84" for _ln, _name, tok, _cell in bad), bad
+
+
+def test_two_objects_in_one_row(tmp_path):
+    """`二极管 / 电容器` 一行两对象：指标取并集，逐个数校验。"""
+    doc = _write_doc(tmp_path, "| 对象 | DF | 份额同比 | 专利同比 |\n|---|---:|---:|---:|\n"
+                               "| 器件大盘：二极管 / 电容器 | 0.796% / 0.837% | 0.806 / 0.863 | 0.90 / 0.89 |\n")
+    checked, bad, _skipped, _noobj = check(doc=doc)
+    assert not bad, bad
+    assert checked >= 6, checked
+
+
+def test_evidence_block_context_is_checked(tmp_path):
+    """`证据（子方向 1.2）` 后的指标行按该子方向对账。"""
+    doc = _write_doc(tmp_path, "| 证据（子方向 1.2） | 数值 |\n|---|---|\n"
+                               "| 三年提及量 | 727,147 |\n"
+                               "| 专利同比 | 0.96（88,623 / 92,068） |\n")
+    checked, bad, _skipped, _noobj = check(doc=doc)
+    assert not bad, bad
+    assert checked >= 4, checked
+
+
+def test_evidence_block_wrong_value_is_detected(tmp_path):
+    doc = _write_doc(tmp_path, "| 证据（子方向 1.2） | 数值 |\n|---|---|\n"
+                               "| 三年提及量 | 727,148 |\n")
+    _checked, bad, _skipped, _noobj = check(doc=doc)
+    assert any(tok == "727148" for _ln, _name, tok, _cell in bad), bad
+
+
+def test_unresolved_row_with_numbers_is_reported(tmp_path):
+    """解析不了、但一行有 ≥2 个纯数字格的行，要进 noobj 而不是静默丢弃。"""
+    doc = _write_doc(tmp_path, "| 对象 | a | b |\n|---|---:|---:|\n"
+                               "| 无法识别的对象名 | 1.234 | 5.678 |\n")
+    _checked, _bad, _skipped, noobj = check(doc=doc)
+    assert any("无法识别" in x for x in noobj), noobj
