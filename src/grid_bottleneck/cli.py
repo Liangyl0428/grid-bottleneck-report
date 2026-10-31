@@ -83,7 +83,7 @@ def cmd_verify(args):
     if noobj:
         ids = sorted(noobj)
         shown = "、".join(ids[:8]) + (" …" if len(ids) > 8 else "")
-        print(f"未识别的表格对象 {len(noobj)} 个（正常：外部资料/说明表）: " + shown)
+        print(f"未识别的表格对象 {len(noobj)} 个（证据编号/汇总表等非词条行；`词条：`/`子方向` 前缀已识别）: " + shown)
     if bad:
         print(f"\n无法回溯的数字 {len(bad)} 处：")
         for lineno, name, tok, cell in bad:

@@ -3,7 +3,7 @@
 用「学术注意力」与「产业化节奏」的背离，定位电力系统转型中的**真瓶颈**与**潜在颠覆方向**。
 
 **这不是一份文献综述**：每个结论都绑定到可复算的份额/增速指标，`clone` 下来跑一行命令
-就能把报告里的 92 个数字全部回溯到 CSV。
+就能把报告里的 166 个表格数字全部回溯到 CSV。
 
 📄 **正文**：[docs/电网瓶颈与颠覆性方向.md](docs/电网瓶颈与颠覆性方向.md)
 
@@ -41,7 +41,7 @@ grid-bottleneck summary                   # 打印瓶颈/伪前沿归类
 grid-bottleneck subtopics                 # 从 data/ 复算子方向指标
 grid-bottleneck verify                    # 报告数字逐格回溯 CSV（CI 用，失败退出码 1）
 grid-bottleneck show 构网型逆变器          # 查单条词条的全部指标
-pytest                                    # 16 条测试：口径、互斥、快照可复算（CI 另做逐字节 diff）、上游 pin 一致性
+pytest                                    # 19 条测试：口径、互斥、快照可复算（CI 另做逐字节 diff）、上游 pin 一致性
 ```
 
 不装包也能跑：
@@ -58,7 +58,7 @@ PYTHONPATH=src python -m pytest tests
 | | 能 | 不能 |
 |---|---|---|
 | 子方向指标 | ✅ 从 `data/` 复算，`data/subtopic_report.csv` 与工具输出**逐字节一致** | |
-| 报告数字 | ✅ 92 个表格数字逐格回溯（`grid-bottleneck verify`） | |
+| 报告数字 | ✅ 166 个表格数字逐格回溯（`grid-bottleneck verify`） | |
 | 判定归类 | ✅ 门槛在 `config/subtopic_rules.json`，改门槛即可重跑 | |
 | 词条级指标 | | ❌ 需要原始语料（OpenAlex + 专利 + 政策，数 GB），不在本仓库 |
 | 换语料/换窗口 | | ❌ 只能用 `data/` 快照 |
@@ -89,7 +89,7 @@ src/grid_bottleneck/
 config/
   subtopic_rules.json    子方向判定门槛
   subtopic_review.json   人工复核（非技术子方向排除、性质改判，必须写理由）
-tests/                   16 条测试
+tests/                   19 条测试
 ```
 
 ---

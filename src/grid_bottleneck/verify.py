@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """报告数字对账：把 `docs/电网瓶颈与颠覆性方向.md` 里表格中的数字逐格回溯到快照 CSV。
 
-只解析"第一格是词条名或子方向编号"的表格行；说明性文字（规约不成纯数字的格子）整格跳过。
+解析"第一格是词条名或子方向编号"的表格行，并去掉 `词条：` / `子方向 ` 前缀；
+括号里的原始计数（如 `3.18×（123/38）`）也逐个数回溯，不再只校验括号外的倍数。
+说明性文字（整格规约不成数字且没有括号计数）才整格跳过。
 
 它不是"证明结论正确"，而是"证明没有手抄错数字，且每个数字都能指到某张表"。
 退出码：有任何一个数字无法回溯 → 1（可直接放进 CI）。
@@ -20,7 +22,8 @@ DEFAULT_DOC = ROOT / "docs" / "电网瓶颈与颠覆性方向.md"
 # 一个对象上可被引用的指标（列名来自 terms_report.csv / subtopic_report.csv）
 METRIC_KEYS = [
     "yoy", "share_yoy", "patent_growth", "policy_growth", "slope",
-    "df_recent", "df_3y_sum", "hits_3y", "patents_recent", "policies_recent",
+    "df_recent", "df_3y_sum", "hits_3y", "hits_recent", "hits_prev", "hits_base",
+    "patents_recent", "patents_base", "policies_recent", "policies_base",
     "share_yoy_median", "declining_share", "patent_growth_annualized",
 ]
 
@@ -32,6 +35,10 @@ ALLOW_LITERALS = {
 }
 
 NUM = re.compile(r"[-+]?\d+(?:\.\d+)?")
+# 行首前缀：`词条：车网互动` / `子方向 4.1 电力市场机制` / `词条 车网互动`
+PREFIX = re.compile(r"^(?:词条|子方向)\s*[：:]?\s*")
+# 中文括号里的原始计数：`（123/38）`、`（88,623 / 92,068，产业没撤 ✓）`
+PAREN = re.compile(r"（([^）]*)）")
 
 
 def _fmts(v: float) -> set:
@@ -58,6 +65,14 @@ def _clean_cell(cell: str):
     return s if re.fullmatch(r"[-+]?\d[\d,]*(?:\.\d+)?", s) else None
 
 
+def _paren_tokens(cell: str) -> list:
+    """括号内的数字 token（去掉千分位逗号）。"""
+    out = []
+    for m in PAREN.finditer(cell):
+        out += NUM.findall(m.group(1).replace(",", ""))
+    return out
+
+
 def load_pool():
     terms, subs = {}, {}
     with open(DATA / "terms_report.csv", encoding="utf-8-sig", newline="") as fh:
@@ -79,21 +94,35 @@ def metrics_of(row: dict) -> set:
             out |= _fmts(float(v))
         except ValueError:
             continue
+    # 报告里的"需 ≥X"是颠覆门槛 max(1.25, yoy²)；把 yoy² / 专利² 也放进可回溯集合
+    for k in ("yoy", "share_yoy", "patent_growth"):
+        try:
+            out |= _fmts(float(row[k]) ** 2)
+        except (KeyError, TypeError, ValueError):
+            pass
+    try:
+        out |= _fmts(max(1.25, float(row["yoy"]) ** 2))
+    except (KeyError, TypeError, ValueError):
+        pass
     return out
 
 
 def resolve(name: str, terms: dict, subs: dict):
-    if name in terms:
-        return terms[name]
-    m = re.match(r"(\d+\.\d+)", name)
-    if m and m.group(1) in subs:
-        return subs[m.group(1)]
+    for cand in (name.strip(), PREFIX.sub("", name, count=1).strip()):
+        if not cand:
+            continue
+        if cand in terms:
+            return terms[cand]
+        m = re.match(r"(\d+\.\d+)", cand)
+        if m and m.group(1) in subs:
+            return subs[m.group(1)]
     return None
 
 
 def check(doc: Path = DEFAULT_DOC, allow: set | None = None) -> tuple:
     """返回 (checked, bad, skipped, noobj)；bad 为 [(行号, 对象, 数字, 原格)]。"""
     allow = ALLOW_LITERALS | (allow or set())
+    allow_norm = {a.replace(",", "") for a in allow}
     terms, subs = load_pool()
     bad, checked, skipped, noobj = [], 0, 0, set()
     for lineno, line in enumerate(doc.read_text(encoding="utf-8").splitlines(), 1):
@@ -110,12 +139,14 @@ def check(doc: Path = DEFAULT_DOC, allow: set | None = None) -> tuple:
         pool = metrics_of(obj)
         for cell in cells[1:]:
             cleaned = _clean_cell(cell)
-            if cleaned is None:
+            parens = _paren_tokens(cell)
+            if cleaned is None and not parens:
                 skipped += 1
                 continue
-            for tok in NUM.findall(cleaned):
-                tok = tok.replace(",", "")
-                if tok in allow or tok in pool:
+            tokens = [] if cleaned is None else [t.replace(",", "") for t in NUM.findall(cleaned)]
+            tokens += parens
+            for tok in tokens:
+                if tok in allow_norm or tok in pool:
                     checked += 1
                 else:
                     bad.append((lineno, cells[0][:24], tok, cell[:40]))
