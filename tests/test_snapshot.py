@@ -4,7 +4,9 @@
 这是本仓库最强的可复现性保证——别人 clone 下来跑一遍，除了字节级一致外没有别的解释。
 """
 import csv
+import hashlib
 import io
+import json
 from pathlib import Path
 
 from grid_bottleneck import data
@@ -28,6 +30,16 @@ def test_snapshot_is_reproducible_byte_for_byte():
     # 两者都用 utf-8-sig 读：BOM 不参与比较，其余必须逐字节一致
     committed = (DATA / "subtopic_report.csv").read_text(encoding="utf-8-sig")
     assert _render(build_rows()).lstrip("\ufeff") == committed
+
+
+def test_upstream_snapshot_pinned():
+    """data/ 里的上游快照必须与 run_meta.json 记录的 sha256 一致（漂移告警）。"""
+    meta = json.loads((DATA / "run_meta.json").read_text(encoding="utf-8"))
+    pins = meta.get("upstream_pin") or {}
+    assert pins, "run_meta.json 必须记录上游快照的 sha256"
+    for name, expected in pins.items():
+        got = hashlib.sha256((DATA / name).read_bytes()).hexdigest()
+        assert got == expected, f"{name} 与 run_meta.json 记录的 sha256 不一致，快照已漂移"
 
 
 def test_three_bottlenecks_and_their_numbers():

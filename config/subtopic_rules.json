@@ -1,6 +1,6 @@
 {
   "_note": "子方向级判定门槛。改门槛不需要改代码；改完必须同步 docs/METHOD.md（二者不一致视为 bug）。",
-  "_provenance": "数值与上游流水线 energy-topic-hotspots 的 config/hotspot_rules.json 的 subtopic 段一致；本仓库只保留子方向层所需的这一段。",
+  "_provenance": "自本仓库 v2（2026-10-31）起独立维护；数值口径见 docs/METHOD.md §4。上游 energy-topic-hotspots 已不再提供 subtopic 判据段。",
   "subtopic": {
     "_note": "子方向指标一律用『成员词条命中数求和』，与专利/政策的求和口径一致；不允许论文侧取中位数、专利侧求和。",
     "scale_hits_3y_min": 3000.0,
