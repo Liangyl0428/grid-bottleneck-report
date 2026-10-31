@@ -15,3 +15,5 @@ venv/
 # 本地重算输出（别覆盖 data/ 里的快照）
 *.regen.csv
 tmp/
+*.tmp
+*.dsh-remote-edit-*

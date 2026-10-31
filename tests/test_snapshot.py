@@ -54,16 +54,18 @@ def test_upstream_pin_covers_metric_inputs():
         assert name in pins, f"{name} 缺少 sha256 锚点"
 
 
-def test_three_bottlenecks_and_their_numbers():
+def test_bottlenecks_and_their_numbers():
     rows = {r["code"]: r for r in build_rows()}
     got = [c for c, r in rows.items() if r["class_primary"] == "bottleneck"]
-    assert got == ["1.2", "6.2", "7.6"]
+    assert got == ["1.2", "6.2", "7.6", "9.1"]
     assert round(rows["1.2"]["share_yoy"], 3) == 0.944
-    assert round(rows["1.2"]["patent_growth"], 2) == 0.98
+    assert round(rows["1.2"]["patent_growth"], 2) == 0.96
     assert round(rows["6.2"]["share_yoy"], 3) == 1.024
-    assert round(rows["6.2"]["patent_growth"], 2) == 1.00
+    assert round(rows["6.2"]["patent_growth"], 2) == 1.02
     assert round(rows["7.6"]["share_yoy"], 3) == 0.925
-    assert round(rows["7.6"]["patent_growth"], 2) == 1.28
+    assert round(rows["7.6"]["patent_growth"], 2) == 1.23
+    assert round(rows["9.1"]["share_yoy"], 3) == 0.872
+    assert round(rows["9.1"]["patent_growth"], 2) == 1.07
 
 
 def test_classes_partition_all_subtopics():
@@ -73,8 +75,8 @@ def test_classes_partition_all_subtopics():
         assert r["class_primary"] in ("", "bottleneck", "academic_hot_industry_cold",
                                       "both_declining", "mature_industry")
     assert sum(1 for r in rows if r["class_primary"] == "mature_industry") == 1
-    assert sum(1 for r in rows if r["class_primary"] == "academic_hot_industry_cold") == 5
-    assert sum(1 for r in rows if r["class_primary"] == "both_declining") == 3
+    assert sum(1 for r in rows if r["class_primary"] == "academic_hot_industry_cold") == 6
+    assert sum(1 for r in rows if r["class_primary"] == "both_declining") == 2
 
 
 def test_excluded_subtopics_are_not_classified():
