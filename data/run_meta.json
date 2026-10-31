@@ -17,7 +17,7 @@
     "dict_snapshot.csv": "0a705efb642906f9153f5557fba28090bed06b3b917dc1a325c2de9f33753f11",
     "papers_by_quarter.csv": "8cfd20f3f430d78ac16c38b52d91f1e9e8291d06d124d58463e968d9002c88a4",
     "corpus_totals.csv": "f34bc509ca349f6dce5bfd0a33d69339b8b4d9eeca539697ec8bf789e6d2f29f",
-    "patents_by_year.csv": "bd4acf802df914be685c645766ccb880584cd0b3b6c369b193314ecb6bf3ab67",
+    "patents_by_year.csv": "1206f1409bb9460a147b03d2e0213cf152766b7ad4dc55b38898733d5eb65f20",
     "policies_by_year.csv": "81c8dcf3ff5fd63db3b467d41d5bf050af4bb07df376d1d30b32b23681c6e37d"
   },
   "upstream_pin_note": "词条级遥测快照的 sha256，覆盖份额/斜率/专利/政策用到的全部 6 个上游文件（terms_report、dict_snapshot、papers_by_quarter、corpus_totals、patents_by_year、policies_by_year）。上游 energy-topic-hotspots 的 outputs/terms 若重新生成，这里会不匹配，tests/test_snapshot.py 会失败——这是有意的漂移告警。"

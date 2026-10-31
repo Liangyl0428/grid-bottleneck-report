@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "grid-bottleneck-report"
-version = "2.0.0"
+version = "2.0.1"
 description = "电网能源领域的关键瓶颈与潜在颠覆性方向：可复算的子方向分析"
 readme = "README.md"
 requires-python = ">=3.9"
