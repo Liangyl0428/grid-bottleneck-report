@@ -41,7 +41,7 @@ grid-bottleneck summary                   # 打印瓶颈/伪前沿归类
 grid-bottleneck subtopics                 # 从 data/ 复算子方向指标
 grid-bottleneck verify                    # 报告数字逐格回溯 CSV（CI 用，失败退出码 1）
 grid-bottleneck show 构网型逆变器          # 查单条词条的全部指标
-pytest                                    # 16 条测试：口径、互斥、快照字节级可复现、上游 pin 一致性
+pytest                                    # 16 条测试：口径、互斥、快照可复算（CI 另做逐字节 diff）、上游 pin 一致性
 ```
 
 不装包也能跑：

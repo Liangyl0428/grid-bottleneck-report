@@ -81,8 +81,9 @@ def cmd_verify(args):
     print(f"文档: {Path(args.doc).name}")
     print(f"可回溯数字 {checked}/{total}；说明性格子跳过 {skipped}")
     if noobj:
-        print(f"未识别的表格对象 {len(noobj)} 个（正常：外部资料/说明表）: "
-              + "、".join(sorted(noobj)[:8]))
+        ids = sorted(noobj)
+        shown = "、".join(ids[:8]) + (" …" if len(ids) > 8 else "")
+        print(f"未识别的表格对象 {len(noobj)} 个（正常：外部资料/说明表）: " + shown)
     if bad:
         print(f"\n无法回溯的数字 {len(bad)} 处：")
         for lineno, name, tok, cell in bad:

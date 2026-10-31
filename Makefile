@@ -22,4 +22,5 @@ subtopics:
 	$(PY) -m grid_bottleneck subtopics
 
 clean:
-	rm -rf .pytest_cache **/__pycache__ *.egg-info
+	rm -rf .pytest_cache *.egg-info
+	find . -name __pycache__ -type d -prune -exec rm -rf {} +
