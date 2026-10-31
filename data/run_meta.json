@@ -1,0 +1,15 @@
+{
+  "version": "v3.0",
+  "built_at": "2026-10-30T12:17:42",
+  "docs_scanned": 1754329,
+  "terms": 1811,
+  "_note": "上游流水线运行元信息。corpus_db 路径已移除（内部路径，与结论无关）。",
+  "counting": {
+    "doc_level_dedup": true,
+    "longest_match": true,
+    "ascii_normalized": true,
+    "plural_variants": true,
+    "acronym_case_sensitive": true,
+    "year_only_date_repair": "spread over observed quarters"
+  }
+}

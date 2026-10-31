@@ -1,0 +1,17 @@
+# 运行产物
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+.DS_Store
+
+# 本地重算输出（别覆盖 data/ 里的快照）
+*.regen.csv
+tmp/
